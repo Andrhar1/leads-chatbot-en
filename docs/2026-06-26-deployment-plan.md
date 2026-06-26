@@ -1,7 +1,7 @@
 # Deployment Plan — leads-chatbot-en
 
 Status: ready to roll out
-Target: Ubuntu 24.04 VPS · Docker + Compose + Nginx · domain `andrihari.my.id` (Cloudflare-proxied)
+Target: Ubuntu 24.04 VPS · Docker + Compose + Nginx · domain `leads.andrihari.my.id` (Cloudflare-proxied)
 Repository: https://github.com/Andrhar1/leads-chatbot-en
 Operational runbook (step-by-step commands): [`deploy/README.md`](../deploy/README.md)
 
@@ -90,8 +90,8 @@ Full commands: `deploy/README.md`.
 
 - `docker compose ... ps` → 4 services Up, backend **healthy**.
 - `curl 127.0.0.1:4000/health` → `{"ok":true}`.
-- `curl 127.0.0.1/api/health -H 'Host: andrihari.my.id'` → `{"ok":true}`.
-- `nginx -t` OK; `https://andrihari.my.id/` → 200; login persists; Socket.io connects.
+- `curl 127.0.0.1/api/health -H 'Host: leads.andrihari.my.id'` → `{"ok":true}`.
+- `nginx -t` OK; `https://leads.andrihari.my.id/` → 200; login persists; Socket.io connects.
 
 ## 8. Rollback
 

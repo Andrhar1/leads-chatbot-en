@@ -1,7 +1,7 @@
 # Production Deployment — leads-chatbot-en
 
 Target: **Ubuntu 24.04 VPS**, Docker + Docker Compose + Nginx already installed,
-domain **andrihari.my.id** (Cloudflare-proxied, HTTPS at the edge).
+domain **leads.andrihari.my.id** (Cloudflare-proxied, HTTPS at the edge).
 
 Deployment is **CI/CD via GitHub Actions**: every push to `main` builds the
 backend + frontend images, pushes them to **GHCR**, then SSHes to the VPS to
@@ -67,11 +67,11 @@ nano .env.production                          # fill real values
 > The `docker-compose.prod.yml` file is delivered automatically by CI on each
 > deploy, so you don't need to copy it manually.
 
-Install the Nginx reverse proxy (see `deploy/nginx/andrihari.my.id.conf`):
+Install the Nginx reverse proxy (see `deploy/nginx/leads.andrihari.my.id.conf`):
 ```bash
-sudo cp deploy/nginx/andrihari.my.id.conf /etc/nginx/sites-available/andrihari.my.id.conf
-sudo ln -sf /etc/nginx/sites-available/andrihari.my.id.conf \
-            /etc/nginx/sites-enabled/andrihari.my.id.conf
+sudo cp deploy/nginx/leads.andrihari.my.id.conf /etc/nginx/sites-available/leads.andrihari.my.id.conf
+sudo ln -sf /etc/nginx/sites-available/leads.andrihari.my.id.conf \
+            /etc/nginx/sites-enabled/leads.andrihari.my.id.conf
 sudo rm -f /etc/nginx/sites-enabled/default   # if it grabs port 80
 sudo nginx -t && sudo systemctl reload nginx
 ```
@@ -143,9 +143,9 @@ TLS to the browser already works (Cloudflare). For a secure origin hop use
 **SSL/TLS mode = Full (strict)** with a Cloudflare **Origin Certificate**:
 
 1. Cloudflare → SSL/TLS → Origin Server → **Create Certificate**.
-2. Save cert to `/etc/ssl/cloudflare/andrihari.my.id.pem` and key to
-   `/etc/ssl/cloudflare/andrihari.my.id.key` (`sudo chmod 600` the key).
-3. In `andrihari.my.id.conf` switch to `listen 443 ssl;` + the `ssl_certificate`
+2. Save cert to `/etc/ssl/cloudflare/leads.andrihari.my.id.pem` and key to
+   `/etc/ssl/cloudflare/leads.andrihari.my.id.key` (`sudo chmod 600` the key).
+3. In `leads.andrihari.my.id.conf` switch to `listen 443 ssl;` + the `ssl_certificate`
    lines, and add an HTTP→HTTPS redirect block. `sudo nginx -t && sudo systemctl reload nginx`.
 
 Until then keep Cloudflare SSL mode at **Full** (CF → origin over HTTP:80).
@@ -172,10 +172,10 @@ webhook is already wired to `http://backend:4000/webhook/waha` internally.
 COMPOSE="docker compose -f docker-compose.prod.yml --env-file .env.production"
 $COMPOSE ps                              # 4 services Up, backend healthy
 curl -s http://127.0.0.1:4000/health     # -> {"ok":true}
-curl -s http://127.0.0.1/api/health -H 'Host: andrihari.my.id'   # -> {"ok":true}
+curl -s http://127.0.0.1/api/health -H 'Host: leads.andrihari.my.id'   # -> {"ok":true}
 sudo nginx -t && systemctl is-active nginx
-curl -sI https://andrihari.my.id/        # 200 via Cloudflare
-curl -s  https://andrihari.my.id/api/health
+curl -sI https://leads.andrihari.my.id/        # 200 via Cloudflare
+curl -s  https://leads.andrihari.my.id/api/health
 ```
 
 ---
