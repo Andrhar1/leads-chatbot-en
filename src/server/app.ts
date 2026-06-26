@@ -19,7 +19,7 @@ export interface AppDeps {
 }
 
 // Route yang boleh diakses tanpa sesi valid.
-const PUBLIC_ROUTES = new Set(["/auth/login", "/auth/logout", "/auth/me", "/webhook/waha"]);
+const PUBLIC_ROUTES = new Set(["/auth/login", "/auth/logout", "/auth/me", "/webhook/waha", "/health"]);
 
 export function buildApp(deps: AppDeps): { fastify: FastifyInstance; io: IOServer } {
   const fastify = Fastify({ logger: false });
@@ -43,6 +43,9 @@ export function buildApp(deps: AppDeps): { fastify: FastifyInstance; io: IOServe
   const processedIds = new Set<string>();
   const botSent = new Set<string>();
   const handleInbound = makeHandleInbound({ ...deps, emit, processedIds, botSent });
+
+  // Liveness/readiness probe for Docker healthcheck and Nginx upstream checks.
+  fastify.get("/health", async () => ({ ok: true }));
 
   fastify.post("/webhook/waha", async (req) => {
     await handleInbound(req.body);

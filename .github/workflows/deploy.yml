@@ -1,0 +1,114 @@
+name: Build and Deploy
+
+# Build both images, push to GHCR, then SSH to the VPS to pull & restart.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      backend_image: ${{ steps.out.outputs.backend }}
+      frontend_image: ${{ steps.out.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compute lowercase image base
+        id: vars
+        run: echo "base=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push backend
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ steps.vars.outputs.base }}-backend:latest
+            ${{ steps.vars.outputs.base }}-backend:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build & push frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./web
+          file: ./web/Dockerfile
+          push: true
+          build-args: |
+            NEXT_PUBLIC_API_URL=/api
+            NEXT_PUBLIC_SOCKET_PATH=/api/socket.io
+          tags: |
+            ${{ steps.vars.outputs.base }}-frontend:latest
+            ${{ steps.vars.outputs.base }}-frontend:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Export image refs (pinned by commit SHA)
+        id: out
+        run: |
+          echo "backend=${{ steps.vars.outputs.base }}-backend:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          echo "frontend=${{ steps.vars.outputs.base }}-frontend:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+
+      # Keep the VPS copy of the compose file in sync with the repo.
+      - name: Copy compose file to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_SSH_PORT }}
+          source: docker-compose.prod.yml
+          target: /home/ubuntu/apps/leads-chatbot-en/
+
+      - name: Pull images & restart on VPS
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          BACKEND_IMAGE: ${{ needs.build-and-push.outputs.backend_image }}
+          FRONTEND_IMAGE: ${{ needs.build-and-push.outputs.frontend_image }}
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_SSH_PORT }}
+          envs: BACKEND_IMAGE,FRONTEND_IMAGE,GHCR_USER,GHCR_TOKEN
+          script: |
+            set -euo pipefail
+            cd /home/ubuntu/apps/leads-chatbot-en
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+            export BACKEND_IMAGE FRONTEND_IMAGE
+            COMPOSE="docker compose -f docker-compose.prod.yml --env-file .env.production"
+            $COMPOSE pull
+            $COMPOSE up -d
+            docker logout ghcr.io
+            docker image prune -f
+            echo "Deployed: backend=$BACKEND_IMAGE frontend=$FRONTEND_IMAGE"

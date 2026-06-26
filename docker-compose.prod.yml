@@ -1,0 +1,103 @@
+# ---------------------------------------------------------------------------
+# Production stack for leads-chatbot-en.
+#
+#   Run with:  docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+#
+# Exposure policy (requirement: do not expose unnecessary ports):
+#   postgres  -> internal only (no host port)
+#   waha      -> 127.0.0.1:3002 only (loopback; reach via SSH tunnel for QR)
+#   backend   -> 127.0.0.1:4000 only (loopback; host Nginx proxies to it)
+#   frontend  -> 127.0.0.1:3005 only (loopback; host Nginx proxies to it)
+# Nothing is published on the public interface; Cloudflare -> Nginx -> these.
+# ---------------------------------------------------------------------------
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.production}
+      POSTGRES_DB: ${POSTGRES_DB:-leads}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-app} -d ${POSTGRES_DB:-leads}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [internal]
+
+  waha:
+    image: devlikeapro/waha:latest   # amd64 image for the VPS (dev used :arm)
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3002:3000"        # loopback only -> SSH tunnel to scan QR
+    environment:
+      WHATSAPP_HOOK_URL: http://backend:4000/webhook/waha
+      WHATSAPP_HOOK_EVENTS: message.any
+      WAHA_API_KEY: ${WAHA_API_KEY:?set WAHA_API_KEY in .env.production}
+      WAHA_DASHBOARD_USERNAME: ${WAHA_DASHBOARD_USERNAME:-admin}
+      WAHA_DASHBOARD_PASSWORD: ${WAHA_DASHBOARD_PASSWORD:?set WAHA_DASHBOARD_PASSWORD in .env.production}
+      WHATSAPP_SWAGGER_USERNAME: ${WAHA_DASHBOARD_USERNAME:-admin}
+      WHATSAPP_SWAGGER_PASSWORD: ${WAHA_DASHBOARD_PASSWORD:?set WAHA_DASHBOARD_PASSWORD in .env.production}
+    volumes:
+      - waha_sessions:/app/.sessions
+    networks: [internal]
+
+  backend:
+    # CI pushes a tagged image to GHCR and sets BACKEND_IMAGE on the VPS.
+    # The build: block is a fallback for local builds (docker compose build).
+    image: ${BACKEND_IMAGE:-leads-backend:local}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      waha:
+        condition: service_started
+    environment:
+      NODE_ENV: production
+      PORT: "4000"
+      DATABASE_URL: postgres://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-leads}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:?set DEEPSEEK_API_KEY in .env.production}
+      WAHA_BASE_URL: http://waha:3000
+      WAHA_SESSION: ${WAHA_SESSION:-default}
+      WAHA_API_KEY: ${WAHA_API_KEY}
+    ports:
+      - "127.0.0.1:4000:4000"        # loopback only -> host Nginx
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:4000/health >/dev/null 2>&1 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks: [internal]
+
+  frontend:
+    image: ${FRONTEND_IMAGE:-leads-frontend:local}
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: /api
+        NEXT_PUBLIC_SOCKET_PATH: /api/socket.io
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_started
+    environment:
+      NODE_ENV: production
+      PORT: "3005"
+    ports:
+      - "127.0.0.1:3005:3005"        # loopback only -> host Nginx
+    networks: [internal]
+
+volumes:
+  pg_data:
+  waha_sessions:
+
+networks:
+  internal:
+    driver: bridge

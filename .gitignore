@@ -1,6 +1,8 @@
 node_modules
 dist
 .env
+.env.production
+.env.*.local
 web/.next
 web/node_modules
 web/next-env.d.ts
