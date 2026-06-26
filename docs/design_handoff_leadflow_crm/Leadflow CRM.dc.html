@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: #EEF1F8; -webkit-font-smoothing: antialiased; }
+  .lf-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+  .lf-scroll::-webkit-scrollbar-thumb { background: #D3DAEA; border-radius: 8px; }
+  .lf-scroll::-webkit-scrollbar-track { background: transparent; }
+  @keyframes lfpop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+</style>
+</helmet>
+
+<div style="height: 100vh; display: flex; flex-direction: column; background: #EEF1F8; overflow: hidden;">
+
+  <!-- Top bar -->
+  <div style="height: 60px; flex: none; background: linear-gradient(90deg,#2A6BFF,#3D7BFF); display: flex; align-items: center; padding: 0 20px; gap: 16px; box-shadow: 0 2px 12px rgba(42,107,255,.25); z-index: 5;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 6c0-1.1.9-2 2-2h9l5 5v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6Z" stroke="#fff" stroke-width="1.8"/><path d="M8 11h7M8 15h5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <div style="color: #fff; font-weight: 800; font-size: 17px; letter-spacing: -.3px;">Leadflow</div>
+    </div>
+    <div style="flex: 1; max-width: 420px; margin-left: 8px; position: relative;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%);"><circle cx="11" cy="11" r="7" stroke="#9DB4E8" stroke-width="2"/><path d="m20 20-3-3" stroke="#9DB4E8" stroke-width="2" stroke-linecap="round"/></svg>
+      <input placeholder="Cari lead, perusahaan, atau percakapan…" style="width: 100%; height: 38px; border: none; border-radius: 10px; background: rgba(255,255,255,.16); color: #fff; padding: 0 14px 0 40px; font-size: 13.5px; font-family: inherit; outline: none;" />
+    </div>
+    <div style="flex: 1;"></div>
+    <button style="display: flex; align-items: center; gap: 7px; height: 38px; padding: 0 16px; border: none; border-radius: 10px; background: #fff; color: #2A6BFF; font-weight: 700; font-size: 13.5px; font-family: inherit; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.08);">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      Lead Baru
+    </button>
+    <div style="display: flex; align-items: center; gap: 8px; padding-left: 6px;">
+      <div style="width: 36px; height: 36px; border-radius: 50%; background: #1B4DDB; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; border: 2px solid rgba(255,255,255,.4);">N</div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div style="flex: 1; display: flex; min-height: 0;">
+
+    <!-- Icon rail -->
+    <div style="width: 76px; flex: none; background: #fff; border-right: 1px solid #E6EAF3; display: flex; flex-direction: column; align-items: center; padding: 14px 0; gap: 6px;">
+      <sc-for list="{{ navItems }}" as="nav" hint-placeholder-count="5">
+        <button onClick="{{ nav.onClick }}" title="{{ nav.label }}" style="{{ nav.btnStyle }}">
+          <span style="{{ nav.iconWrap }}">{{ nav.icon }}</span>
+          <span style="font-size: 10px; font-weight: 600; letter-spacing: .1px;">{{ nav.label }}</span>
+        </button>
+      </sc-for>
+      <div style="flex: 1;"></div>
+      <button title="Pengaturan" style="display: flex; flex-direction: column; align-items: center; gap: 5px; width: 60px; padding: 9px 0; border: none; border-radius: 12px; background: transparent; color: #8A97B4; cursor: pointer; font-family: inherit;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3 1a7 7 0 0 0-1.7-1l-.3-2.5h-4l-.3 2.5a7 7 0 0 0-1.7 1l-2.3-1-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 1.7 1l.3 2.5h4l.3-2.5a7 7 0 0 0 1.7-1l2.3 1 2-3.4-2-1.5a7 7 0 0 0 .1-1Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <span style="font-size: 10px; font-weight: 600;">Atur</span>
+      </button>
+    </div>
+
+    <sc-if value="{{ isInbox }}" hint-placeholder-val="{{ true }}">
+    <div style="flex: 1; display: flex; min-height: 0;">
+
+    <!-- Lead list pane -->
+    <div style="width: 360px; flex: none; background: #fff; border-right: 1px solid #E6EAF3; display: flex; flex-direction: column; min-height: 0;">
+      <div style="padding: 18px 18px 12px;">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px;">
+          <div style="font-size: 18px; font-weight: 800; color: #16203A; letter-spacing: -.3px;">Leads</div>
+          <div style="font-size: 12.5px; color: #7C89A8; font-weight: 600;">{{ totalLabel }}</div>
+        </div>
+        <!-- Segmented tabs -->
+        <div style="display: flex; gap: 4px; background: #F1F4FB; border-radius: 11px; padding: 4px;">
+          <sc-for list="{{ tabs }}" as="tab" hint-placeholder-count="3">
+            <button onClick="{{ tab.onClick }}" style="{{ tab.style }}">{{ tab.label }}<span style="{{ tab.countStyle }}">{{ tab.count }}</span></button>
+          </sc-for>
+        </div>
+        <!-- Filters -->
+        <div style="display: flex; gap: 8px; margin-top: 12px;">
+          <div style="flex: 1; position: relative;">
+            <select value="{{ industryFilter }}" onChange="{{ onIndustry }}" style="width: 100%; height: 36px; border: 1px solid #E3E8F3; border-radius: 9px; background: #Fff; color: #41506E; font-size: 12.5px; font-weight: 600; font-family: inherit; padding: 0 28px 0 12px; appearance: none; cursor: pointer; outline: none;">
+              <sc-for list="{{ industries }}" as="opt" hint-placeholder-count="4">
+                <option value="{{ opt }}">{{ opt }}</option>
+              </sc-for>
+            </select>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"><path d="m6 9 6 6 6-6" stroke="#9AA7C2" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div style="flex: 1; position: relative;">
+            <select value="{{ statusFilter }}" onChange="{{ onStatus }}" style="width: 100%; height: 36px; border: 1px solid #E3E8F3; border-radius: 9px; background: #Fff; color: #41506E; font-size: 12.5px; font-weight: 600; font-family: inherit; padding: 0 28px 0 12px; appearance: none; cursor: pointer; outline: none;">
+              <sc-for list="{{ statusOptions }}" as="opt" hint-placeholder-count="4">
+                <option value="{{ opt.value }}">{{ opt.label }}</option>
+              </sc-for>
+            </select>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"><path d="m6 9 6 6 6-6" stroke="#9AA7C2" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- List -->
+      <div class="lf-scroll" style="flex: 1; overflow-y: auto; padding: 4px 10px 16px;">
+        <sc-for list="{{ filteredLeads }}" as="lead" hint-placeholder-count="6">
+          <div onClick="{{ lead.onClick }}" style="{{ lead.rowStyle }}">
+            <div style="position: relative; flex: none;">
+              <div style="{{ lead.avatarStyle }}">{{ lead.initial }}</div>
+              <div style="{{ lead.channelDot }}" title="{{ lead.channelLabel }}"></div>
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                <div style="font-weight: 700; font-size: 13.5px; color: #1B2741; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ lead.name }}</div>
+                <div style="font-size: 11px; color: #97A2BC; font-weight: 600; flex: none;">{{ lead.time }}</div>
+              </div>
+              <div style="font-size: 12px; color: #5C6A88; font-weight: 600; margin: 1px 0 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ lead.company }}</div>
+              <div style="font-size: 12px; color: #8592AC; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 7px;">{{ lead.preview }}</div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="{{ lead.statusBadge }}">{{ lead.statusLabel }}</span>
+                <span style="font-size: 11px; color: #97A2BC; font-weight: 600;">{{ lead.industry }}</span>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- Chat pane -->
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; background: #F4F6FC;">
+      <!-- chat header -->
+      <div style="height: 64px; flex: none; background: #fff; border-bottom: 1px solid #E6EAF3; display: flex; align-items: center; padding: 0 22px; gap: 12px;">
+        <div style="{{ selected.avatarStyleLg }}">{{ selected.initial }}</div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="font-weight: 800; font-size: 15.5px; color: #16203A;">{{ selected.name }}</div>
+            <span style="{{ selected.statusBadge }}">{{ selected.statusLabel }}</span>
+          </div>
+          <div style="font-size: 12px; color: #7C89A8; font-weight: 600; margin-top: 1px; display: flex; align-items: center; gap: 6px;">
+            <span style="{{ selected.channelDotInline }}"></span>{{ selected.channelLabel }} · {{ selected.company }}
+          </div>
+        </div>
+        <button style="display: flex; align-items: center; gap: 7px; height: 38px; padding: 0 16px; border: none; border-radius: 10px; background: #E9F7EF; color: #16A45E; font-weight: 700; font-size: 13px; font-family: inherit; cursor: pointer;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Tandai Selesai
+        </button>
+        <button style="width: 38px; height: 38px; border: 1px solid #E3E8F3; border-radius: 10px; background: #fff; color: #7C89A8; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/></svg>
+        </button>
+      </div>
+
+      <!-- messages -->
+      <div class="lf-scroll" style="flex: 1; overflow-y: auto; padding: 22px 26px;">
+        <div style="text-align: center; margin-bottom: 18px;"><span style="font-size: 11.5px; color: #93A0BC; font-weight: 700; background: #E7ECF7; padding: 4px 12px; border-radius: 20px;">Hari ini</span></div>
+        <sc-for list="{{ selected.messages }}" as="msg" hint-placeholder-count="5">
+          <div style="{{ msg.rowStyle }}">
+            <div style="{{ msg.bubbleStyle }}">
+              {{ msg.text }}
+              <div style="{{ msg.timeStyle }}">{{ msg.time }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <!-- composer -->
+      <div style="flex: none; padding: 14px 22px 18px; background: #F4F6FC;">
+        <div style="background: #fff; border: 1px solid #E3E8F3; border-radius: 16px; padding: 10px 12px; box-shadow: 0 4px 16px rgba(28,44,90,.05);">
+          <textarea value="{{ draft }}" onChange="{{ onDraft }}" placeholder="Tulis balasan…  Tekan Enter untuk kirim" rows="2" style="width: 100%; border: none; resize: none; outline: none; font-family: inherit; font-size: 13.5px; color: #1B2741; background: transparent; line-height: 1.5;"></textarea>
+          <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+            <button style="width: 34px; height: 34px; border: none; border-radius: 9px; background: #F1F4FB; color: #6B7A9C; cursor: pointer; display: flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M9 14s1 1.5 3 1.5S15 14 15 14M9 9h.01M15 9h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+            <button style="width: 34px; height: 34px; border: none; border-radius: 9px; background: #F1F4FB; color: #6B7A9C; cursor: pointer; display: flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 12.5 12.5 21a5 5 0 0 1-7-7l8-8a3.3 3.3 0 0 1 4.7 4.7l-8 8a1.6 1.6 0 0 1-2.3-2.3l7.3-7.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button style="display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border: none; border-radius: 9px; background: #F1F4FB; color: #6B7A9C; font-family: inherit; font-weight: 600; font-size: 12.5px; cursor: pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Template</button>
+            <div style="flex: 1;"></div>
+            <button onClick="{{ onSend }}" style="display: flex; align-items: center; gap: 7px; height: 38px; padding: 0 20px; border: none; border-radius: 10px; background: linear-gradient(90deg,#2A6BFF,#3D7BFF); color: #fff; font-family: inherit; font-weight: 700; font-size: 13.5px; cursor: pointer; box-shadow: 0 3px 10px rgba(42,107,255,.3);">Kirim<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 12 20 4l-5 16-3.5-6.5L4 12Z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round" fill="rgba(255,255,255,.25)"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail panel -->
+    <div class="lf-scroll" style="width: 320px; flex: none; background: #fff; border-left: 1px solid #E6EAF3; overflow-y: auto; padding: 20px;">
+      <div style="display: flex; flex-direction: column; align-items: center; text-align: center; padding-bottom: 18px; border-bottom: 1px solid #EFF2F8;">
+        <div style="{{ selected.avatarStyleXl }}">{{ selected.initial }}</div>
+        <div style="font-weight: 800; font-size: 16px; color: #16203A; margin-top: 12px;">{{ selected.name }}</div>
+        <div style="font-size: 12.5px; color: #7C89A8; font-weight: 600; margin-top: 2px;">{{ selected.company }}</div>
+        <div style="display: flex; gap: 8px; margin-top: 14px;">
+          <button style="display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; border: 1px solid #E3E8F3; border-radius: 9px; background: #fff; color: #41506E; font-family: inherit; font-weight: 700; font-size: 12.5px; cursor: pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 6c0-1 .8-2 2-2h2l1.5 4-2 1.5a11 11 0 0 0 5 5l1.5-2 4 1.5v2c0 1.2-1 2-2 2A15 15 0 0 1 4 6Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>Telepon</button>
+          <button onClick="{{ onOpenDetail }}" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; height: 34px; padding: 0 14px; border: none; border-radius: 9px; background: #EAF1FF; color: #2A6BFF; font-family: inherit; font-weight: 700; font-size: 12.5px; cursor: pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 17H6a4 4 0 0 1 0-8h.5M15 17h3a4 4 0 0 0 0-8h-.5M8 13h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Lihat Profil Lengkap</button>
+        </div>
+      </div>
+
+      <!-- Confidence -->
+      <div style="padding: 18px 0; border-bottom: 1px solid #EFF2F8;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px;">
+          <span style="font-size: 12.5px; font-weight: 700; color: #41506E;">Skor Keyakinan AI</span>
+          <span style="font-size: 13px; font-weight: 800; color: {{ selected.confColor }};">{{ selected.confPct }}</span>
+        </div>
+        <div style="height: 8px; border-radius: 8px; background: #EEF1F8; overflow: hidden;">
+          <div style="{{ selected.confBarStyle }}"></div>
+        </div>
+      </div>
+
+      <!-- Detail rows -->
+      <div style="padding: 18px 0; border-bottom: 1px solid #EFF2F8; display: flex; flex-direction: column; gap: 14px;">
+        <div style="font-size: 12px; font-weight: 800; color: #16203A; text-transform: uppercase; letter-spacing: .5px;">Informasi Lead</div>
+        <sc-for list="{{ selected.details }}" as="d" hint-placeholder-count="4">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 32px; height: 32px; border-radius: 9px; background: {{ d.bg }}; color: {{ d.color }}; display: flex; align-items: center; justify-content: center; flex: none;">{{ d.icon }}</div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 11px; color: #97A2BC; font-weight: 600;">{{ d.label }}</div>
+              <div style="font-size: 13px; color: #1B2741; font-weight: 700;">{{ d.value }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <!-- Tags -->
+      <div style="padding: 18px 0; border-bottom: 1px solid #EFF2F8;">
+        <div style="font-size: 12px; font-weight: 800; color: #16203A; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px;">Tag</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <sc-for list="{{ selected.tags }}" as="tag" hint-placeholder-count="2">
+            <span style="{{ tag.style }}">{{ tag.label }}</span>
+          </sc-for>
+          <button style="display: flex; align-items: center; gap: 4px; height: 26px; padding: 0 10px; border: 1px dashed #CBD4E8; border-radius: 20px; background: transparent; color: #8592AC; font-family: inherit; font-weight: 600; font-size: 11.5px; cursor: pointer;">+ Tambah</button>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div style="padding: 18px 0; border-bottom: 1px solid #EFF2F8;">
+        <div style="font-size: 12px; font-weight: 800; color: #16203A; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px;">Catatan</div>
+        <div style="background: #FFF9EC; border: 1px solid #FBE4BC; border-radius: 12px; padding: 12px 14px; font-size: 12.5px; color: #7A6322; line-height: 1.55; font-weight: 500;">{{ selected.note }}</div>
+      </div>
+
+      <!-- Agent -->
+      <div style="padding: 18px 0 4px;">
+        <div style="font-size: 12px; font-weight: 800; color: #16203A; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px;">Agen Penanggung Jawab</div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 36px; height: 36px; border-radius: 50%; background: #1B4DDB; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">N</div>
+          <div style="flex: 1;">
+            <div style="font-size: 13px; font-weight: 700; color: #1B2741;">Nadia (Anda)</div>
+            <div style="font-size: 11.5px; color: #16A45E; font-weight: 600;">● Online</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
+    <div class="lf-scroll" style="flex: 1; overflow-y: auto; background: #EEF1F8;">
+
+      <!-- sub header -->
+      <div style="background: #fff; border-bottom: 1px solid #E6EAF3; padding: 14px 28px; display: flex; align-items: center; gap: 14px; position: sticky; top: 0; z-index: 2;">
+        <button onClick="{{ onBack }}" style="display: flex; align-items: center; gap: 7px; height: 36px; padding: 0 15px 0 11px; border: 1px solid #E3E8F3; border-radius: 10px; background: #fff; color: #41506E; font-family: inherit; font-weight: 700; font-size: 13px; cursor: pointer;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Kembali
+        </button>
+        <div style="font-size: 13px; color: #97A2BC; font-weight: 600;">Leads<span style="margin: 0 8px;">/</span><span style="color: #41506E;">{{ selected.name }}</span></div>
+      </div>
+
+      <div style="max-width: 1080px; margin: 0 auto; padding: 24px 28px 44px;">
+
+        <!-- hero -->
+        <div style="background: #fff; border: 1px solid #ECEFF6; border-radius: 18px; padding: 24px; display: flex; gap: 22px; align-items: center; box-shadow: 0 6px 22px rgba(28,44,90,.05);">
+          <div style="{{ selected.avatarStyleHero }}">{{ selected.initial }}</div>
+          <div style="flex: 1; min-width: 0;">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <div style="font-size: 22px; font-weight: 800; color: #16203A; letter-spacing: -.4px;">{{ selected.name }}</div>
+              <span style="{{ selected.statusBadge }}">{{ selected.statusLabel }}</span>
+            </div>
+            <div style="font-size: 14px; color: #5C6A88; font-weight: 600; margin-top: 4px;">{{ selected.company }}</div>
+            <div style="display: flex; align-items: center; gap: 16px; margin-top: 10px;">
+              <div style="display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: #7C89A8; font-weight: 600;"><span style="{{ selected.channelDotInline }}"></span>{{ selected.channelLabel }}</div>
+              <div style="font-size: 12.5px; color: #7C89A8; font-weight: 600;">Masuk {{ selected.createdLong }}</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; flex: none;">
+            <button onClick="{{ onBack }}" style="display: flex; align-items: center; gap: 7px; height: 42px; padding: 0 18px; border: 1px solid #E3E8F3; border-radius: 11px; background: #fff; color: #41506E; font-family: inherit; font-weight: 700; font-size: 13.5px; cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v11H9l-4 3V5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Buka Chat</button>
+            <button style="display: flex; align-items: center; gap: 7px; height: 42px; padding: 0 20px; border: none; border-radius: 11px; background: linear-gradient(90deg,#2A6BFF,#3D7BFF); color: #fff; font-family: inherit; font-weight: 700; font-size: 13.5px; cursor: pointer; box-shadow: 0 3px 10px rgba(42,107,255,.3);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 11l18-7-7 18-2.5-7.5L3 11Z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round" fill="rgba(255,255,255,.25)"/></svg>Serahkan ke Tim</button>
+          </div>
+        </div>
+
+        <!-- grid -->
+        <div style="display: grid; grid-template-columns: 1fr 340px; gap: 20px; margin-top: 20px; align-items: start;">
+
+          <!-- left column -->
+          <div style="display: flex; flex-direction: column; gap: 20px; min-width: 0;">
+
+            <!-- info lead -->
+            <div style="background: #fff; border: 1px solid #ECEFF6; border-radius: 18px; padding: 22px; box-shadow: 0 6px 22px rgba(28,44,90,.05);">
+              <div style="font-size: 15px; font-weight: 800; color: #16203A; margin-bottom: 20px;">Informasi Lead</div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px 18px;">
+                <sc-for list="{{ selected.profileFields }}" as="f" hint-placeholder-count="6">
+                  <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+                    <div style="width: 40px; height: 40px; border-radius: 12px; background: {{ f.bg }}; color: {{ f.color }}; display: flex; align-items: center; justify-content: center; flex: none;">{{ f.icon }}</div>
+                    <div style="min-width: 0;">
+                      <div style="font-size: 11px; color: #97A2BC; font-weight: 600;">{{ f.label }}</div>
+                      <div style="font-size: 13.5px; color: #1B2741; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ f.value }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <!-- riwayat percakapan -->
+            <div style="background: #fff; border: 1px solid #ECEFF6; border-radius: 18px; padding: 22px; box-shadow: 0 6px 22px rgba(28,44,90,.05);">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                <div style="font-size: 15px; font-weight: 800; color: #16203A;">Riwayat Percakapan</div>
+                <button onClick="{{ onBack }}" style="border: none; background: transparent; color: #2A6BFF; font-family: inherit; font-weight: 700; font-size: 12.5px; cursor: pointer;">Buka di Inbox →</button>
+              </div>
+              <div class="lf-scroll" style="max-height: 300px; overflow-y: auto; background: #F7F9FD; border: 1px solid #EEF1F8; border-radius: 14px; padding: 16px 18px;">
+                <sc-for list="{{ selected.messages }}" as="msg" hint-placeholder-count="4">
+                  <div style="{{ msg.rowStyle }}">
+                    <div style="{{ msg.bubbleStyle }}">{{ msg.text }}<div style="{{ msg.timeStyle }}">{{ msg.time }}</div></div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <!-- aktivitas -->
+            <div style="background: #fff; border: 1px solid #ECEFF6; border-radius: 18px; padding: 22px; box-shadow: 0 6px 22px rgba(28,44,90,.05);">
+              <div style="font-size: 15px; font-weight: 800; color: #16203A; margin-bottom: 18px;">Riwayat Aktivitas</div>
+              <div>
+                <sc-for list="{{ selected.timeline }}" as="t" hint-placeholder-count="4">
+                  <div style="display: flex; gap: 14px;">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                      <div style="{{ t.dotStyle }}"></div>
+                      <div style="width: 2px; flex: 1; background: #E6EAF3; margin: 5px 0;"></div>
+                    </div>
+                    <div style="padding-bottom: 18px;">
+                      <div style="font-size: 13.5px; font-weight: 700; color: #1B2741;">{{ t.title }}</div>
+                      <div style="font-size: 12.5px; color: #7C89A8; margin-top: 2px;">{{ t.desc }}</div>
+                      <div style="font-size: 11px; color: #A6B0C8; font-weight: 600; margin-top: 4px;">{{ t.time }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- right column -->
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+
+            <!-- AI confidence -->
+            <div style="background: #fff; border: 1px solid #ECEFF6; border-radius: 18px; padding: 22px; box-shadow: 0 6px 22px rgba(28,44,90,.05);">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                <span style="font-size: 14px; font-weight: 800; color: #16203A;">Skor Keyakinan AI</span>
+                <span style="font-size: 22px; font-weight: 800; color: {{ selected.confColor }};">{{ selected.confPct }}</span>
+              </div>
+              <div style="height: 10px; border-radius: 8px; background: #EEF1F8; overflow: hidden;"><div style="{{ selected.confBarStyle }}"></div></div>
+              <div style="font-size: 12px; color: #7C89A8; margin-top: 12px; line-height: 1.5;">Estimasi kualitas lead berdasarkan kelengkapan data &amp; sinyal percakapan.</div>
+            </div>
+
+            <!-- kontak -->
+            <div style="background: #fff; border: 1px solid #ECEFF6; border-radius: 18px; padding: 22px; box-shadow: 0 6px 22px rgba(28,44,90,.05);">
+              <div style="font-size: 14px; font-weight: 800; color: #16203A; margin-bottom: 16px;">Kontak</div>
+              <div style="display: flex; flex-direction: column; gap: 16px;">
+                <sc-for list="{{ selected.contact }}" as="c" hint-placeholder-count="4">
+                  <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+                    <div style="width: 36px; height: 36px; border-radius: 10px; background: #F1F4FB; color: #5C6A88; display: flex; align-items: center; justify-content: center; flex: none;">{{ c.icon }}</div>
+                    <div style="min-width: 0;">
+                      <div style="font-size: 11px; color: #97A2BC; font-weight: 600;">{{ c.label }}</div>
+                      <div style="font-size: 13px; color: #1B2741; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ c.value }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <!-- tags -->
+            <div style="background: #fff; border: 1px solid #ECEFF6; border-radius: 18px; padding: 22px; box-shadow: 0 6px 22px rgba(28,44,90,.05);">
+              <div style="font-size: 14px; font-weight: 800; color: #16203A; margin-bottom: 14px;">Tag</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                <sc-for list="{{ selected.tags }}" as="tag" hint-placeholder-count="2">
+                  <span style="{{ tag.style }}">{{ tag.label }}</span>
+                </sc-for>
+                <button style="display: flex; align-items: center; gap: 4px; height: 26px; padding: 0 10px; border: 1px dashed #CBD4E8; border-radius: 20px; background: transparent; color: #8592AC; font-family: inherit; font-weight: 600; font-size: 11.5px; cursor: pointer;">+ Tambah</button>
+              </div>
+            </div>
+
+            <!-- catatan -->
+            <div style="background: #fff; border: 1px solid #ECEFF6; border-radius: 18px; padding: 22px; box-shadow: 0 6px 22px rgba(28,44,90,.05);">
+              <div style="font-size: 14px; font-weight: 800; color: #16203A; margin-bottom: 12px;">Catatan</div>
+              <div style="background: #FFF9EC; border: 1px solid #FBE4BC; border-radius: 12px; padding: 12px 14px; font-size: 12.5px; color: #7A6322; line-height: 1.55; font-weight: 500;">{{ selected.note }}</div>
+            </div>
+
+            <!-- agen -->
+            <div style="background: #fff; border: 1px solid #ECEFF6; border-radius: 18px; padding: 22px; box-shadow: 0 6px 22px rgba(28,44,90,.05);">
+              <div style="font-size: 14px; font-weight: 800; color: #16203A; margin-bottom: 14px;">Agen Penanggung Jawab</div>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 38px; height: 38px; border-radius: 50%; background: #1B4DDB; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">N</div>
+                <div style="flex: 1;">
+                  <div style="font-size: 13px; font-weight: 700; color: #1B2741;">Nadia (Anda)</div>
+                  <div style="font-size: 11.5px; color: #16A45E; font-weight: 600;">● Online</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;}}">
+class Component extends DCLogic {
+  state = {
+    view: 'inbox',
+    selectedId: 'maju',
+    industryFilter: 'Semua industry',
+    statusFilter: 'all',
+    tab: 'all',
+    draft: '',
+    extraMsgs: {},
+  };
+
+  STATUS = {
+    new:        { label: 'Baru',         bg: '#EAF1FF', color: '#2A6BFF' },
+    qualifying: { label: 'Kualifikasi',  bg: '#FFF3E0', color: '#E8870B' },
+    ready_for_handover: { label: 'Siap Handover', bg: '#E9F7EF', color: '#16A45E' },
+    handover:   { label: 'Diserahkan',   bg: '#F0EBFF', color: '#7B52E0' },
+    closed:     { label: 'Selesai',      bg: '#EEF1F8', color: '#7C89A8' },
+  };
+
+  CHANNEL = {
+    whatsapp:  { label: 'WhatsApp',  color: '#25D366' },
+    instagram: { label: 'Instagram', color: '#E1306C' },
+    email:     { label: 'Email',     color: '#EA4335' },
+    webchat:   { label: 'Webchat',   color: '#2A6BFF' },
+    line:      { label: 'LINE',      color: '#06C755' },
+  };
+
+  AVA = ['#2A6BFF','#7B52E0','#E8870B','#16A45E','#E1306C','#0EA5C4','#EC4899'];
+
+  leads() {
+    return [
+      { id:'maju', name:'Rudi Hartono', company:'PT Maju Sejahtera', industry:'Manufaktur', need:'Lainnya', status:'ready_for_handover', conf:0.80, channel:'whatsapp', time:'10:24', preview:'Kami bergerak dibidang baja',
+        note:'Mohon segera di-follow up oleh tim legal. Lead panas, butuh kontrak distribusi baja.',
+        tags:[{t:'Prospek',c:'#2A6BFF'},{t:'Hot Lead',c:'#E1306C'}],
+        messages:[
+          {who:'them', text:'Selamat Siang', time:'10:18'},
+          {who:'us',   text:'Halo! Terima kasih sudah menghubungi kami. Boleh saya tahu nama Anda dan nama perusahaan/instansi (jika ada)?', time:'10:19'},
+          {who:'them', text:'Saya Rudi dari PT Maju Sejahtera', time:'10:21'},
+          {who:'us',   text:'Boleh ceritakan sedikit bidang usaha atau industri Anda agar kami arahkan ke tim yang tepat?', time:'10:22'},
+          {who:'them', text:'Kami bergerak dibidang baja', time:'10:23'},
+          {who:'us',   text:'Terima kasih atas informasinya. Tim kami akan segera menghubungi Anda. 🙏', time:'10:24'},
+        ] },
+      { id:'sentosa', name:'Maya Putri', company:'CV Sentosa Abadi', industry:'Retail', need:'Kontrak', status:'qualifying', conf:0.62, channel:'instagram', time:'09:51', preview:'Butuh review perjanjian kerjasama…',
+        note:'Tertarik paket review kontrak bulanan.',
+        tags:[{t:'Prospek',c:'#2A6BFF'}],
+        messages:[
+          {who:'them', text:'Halo, saya mau tanya soal review kontrak', time:'09:48'},
+          {who:'us',   text:'Tentu, dengan senang hati. Boleh tahu jenis kontrak apa yang ingin direview?', time:'09:50'},
+          {who:'them', text:'Perjanjian kerjasama dengan supplier', time:'09:51'},
+        ] },
+      { id:'teknik', name:'Bayu Santoso', company:'PT Teknik Nusantara', industry:'Konstruksi', need:'Perizinan', status:'new', conf:0.45, channel:'webchat', time:'09:30', preview:'Mau urus izin usaha konstruksi',
+        note:'Baru masuk, belum diverifikasi.',
+        tags:[{t:'Baru',c:'#7B52E0'}],
+        messages:[
+          {who:'them', text:'Mau urus izin usaha konstruksi', time:'09:30'},
+          {who:'us',   text:'Halo! Terima kasih sudah menghubungi kami. Boleh saya tahu nama dan perusahaan Anda?', time:'09:30'},
+        ] },
+      { id:'dimora', name:'Sinta Wijaya', company:'PT Dimora Group', industry:'Properti', need:'Sengketa', status:'handover', conf:0.91, channel:'email', time:'Kemarin', preview:'Terima kasih, sudah saya kirimkan dok…',
+        note:'Sudah diserahkan ke tim litigasi. Dokumen lengkap.',
+        tags:[{t:'Klien',c:'#16A45E'},{t:'Urgent',c:'#E8870B'}],
+        messages:[
+          {who:'them', text:'Berikut saya kirimkan dokumen sengketa lahan', time:'Kemarin'},
+          {who:'us',   text:'Terima kasih, sudah kami terima. Tim litigasi akan menindaklanjuti. 🙏', time:'Kemarin'},
+        ] },
+      { id:'berkah', name:'Hasan Basri', company:'Toko Berkah Jaya', industry:'Retail', need:'Lainnya', status:'closed', conf:0.55, channel:'line', time:'2 hari', preview:'Baik, terima kasih banyak ya',
+        note:'Sudah selesai dilayani.',
+        tags:[{t:'Selesai',c:'#7C89A8'}],
+        messages:[
+          {who:'them', text:'Beberapa hari lalu saya sudah konsultasi', time:'2 hari'},
+          {who:'us',   text:'Betul, apakah ada yang bisa kami bantu lagi?', time:'2 hari'},
+          {who:'them', text:'Baik, terima kasih banyak ya', time:'2 hari'},
+        ] },
+      { id:'cahaya', name:'Dewi Lestari', company:'PT Cahaya Mandiri', industry:'Manufaktur', need:'Ketenagakerjaan', status:'qualifying', conf:0.68, channel:'whatsapp', time:'2 hari', preview:'Ada masalah dengan PHK karyawan',
+        note:'Kasus ketenagakerjaan, perlu konsultasi cepat.',
+        tags:[{t:'Prospek',c:'#2A6BFF'}],
+        messages:[
+          {who:'them', text:'Ada masalah dengan PHK karyawan', time:'2 hari'},
+          {who:'us',   text:'Kami bisa bantu. Berapa jumlah karyawan yang terdampak?', time:'2 hari'},
+        ] },
+    ];
+  }
+
+  avatarBg(id) {
+    const ls = this.leads();
+    const i = ls.findIndex(l => l.id === id);
+    return this.AVA[i % this.AVA.length];
+  }
+
+  decorate(lead) {
+    const st = this.STATUS[lead.status] || this.STATUS.new;
+    const ch = this.CHANNEL[lead.channel] || this.CHANNEL.webchat;
+    const bg = this.avatarBg(lead.id);
+    const initial = lead.name.trim().charAt(0).toUpperCase();
+    const isSel = lead.id === this.state.selectedId;
+    const confPct = Math.round(lead.conf * 100) + '%';
+    const confColor = lead.conf >= 0.75 ? '#16A45E' : lead.conf >= 0.55 ? '#E8870B' : '#E15050';
+    const statusBadge = `display:inline-flex;align-items:center;height:20px;padding:0 9px;border-radius:7px;font-size:11px;font-weight:700;background:${st.bg};color:${st.color};`;
+
+    const extra = this.state.extraMsgs[lead.id] || [];
+    const allMsgs = lead.messages.concat(extra).map(m => {
+      const us = m.who === 'us';
+      return {
+        text: m.text, time: m.time,
+        rowStyle: `display:flex;justify-content:${us?'flex-end':'flex-start'};margin-bottom:12px;`,
+        bubbleStyle: `max-width:74%;padding:10px 14px 8px;border-radius:${us?'16px 16px 4px 16px':'16px 16px 16px 4px'};font-size:13.5px;line-height:1.5;font-weight:500;background:${us?'linear-gradient(135deg,#2A6BFF,#3D7BFF)':'#fff'};color:${us?'#fff':'#27324C'};box-shadow:0 2px 8px rgba(28,44,90,.06);${us?'':'border:1px solid #ECEFF6;'}animation:lfpop .25s ease;`,
+        timeStyle: `font-size:10px;margin-top:3px;text-align:right;color:${us?'rgba(255,255,255,.7)':'#A6B0C8'};font-weight:600;`,
+      };
+    });
+
+    const idx = this.leads().findIndex(l => l.id === lead.id);
+    const slug = lead.company.replace(/^(PT|CV|Toko|UD)\s+/i,'').toLowerCase().replace(/[^a-z]+/g,'').slice(0,14) || 'perusahaan';
+    const first = lead.name.trim().split(' ')[0].toLowerCase();
+    const phones = ['+62 812-3344-5566','+62 813-7788-9900','+62 821-4455-6677','+62 811-2233-4455','+62 822-9988-7766','+62 814-5566-7788'];
+    const cities = ['Jakarta Selatan','Bandung','Surabaya','Tangerang','Bekasi','Semarang'];
+    const phone = phones[idx % phones.length];
+    const email = first + '@' + slug + '.co.id';
+    const city = cities[idx % cities.length];
+    const site = 'www.' + slug + '.co.id';
+    const created = '24 Jun 2026, ' + lead.time;
+    const source = ch.label + ' Business';
+    const statusDesc = { new:'Menunggu verifikasi agen', qualifying:'Sedang dikualifikasi AI', ready_for_handover:'Siap diserahkan ke tim legal', handover:'Sudah ditangani tim legal', closed:'Layanan selesai' }[lead.status] || '';
+    const dot = (c) => `width:11px;height:11px;border-radius:50%;background:${c};border:3px solid #fff;box-shadow:0 0 0 1px ${c}55;flex:none;margin-top:3px;`;
+    const timeline = [
+      { title:'Lead masuk', desc:'Melalui '+ch.label, time: lead.time, dotStyle: dot(ch.color) },
+      { title:'AI mengumpulkan info', desc:'Nama, perusahaan & kebutuhan terverifikasi', time: lead.time, dotStyle: dot('#2A6BFF') },
+      { title:'Skor keyakinan '+confPct, desc:'Dihitung otomatis oleh AI', time: lead.time, dotStyle: dot(confColor) },
+      { title:'Status: '+st.label, desc: statusDesc, time:'Terbaru', dotStyle: dot(st.color) },
+    ];
+
+    return Object.assign({}, lead, {
+      initial, statusLabel: st.label, statusBadge,
+      channelLabel: ch.label, channelColor: ch.color,
+      confPct, confColor,
+      confBarStyle: `height:100%;width:${Math.round(lead.conf*100)}%;border-radius:8px;background:linear-gradient(90deg,${confColor},${confColor}cc);`,
+      avatarStyle: `width:46px;height:46px;border-radius:14px;background:${bg};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;`,
+      avatarStyleLg: `width:42px;height:42px;border-radius:13px;background:${bg};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex:none;`,
+      avatarStyleXl: `width:72px;height:72px;border-radius:22px;background:${bg};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:28px;`,
+      avatarStyleHero: `width:88px;height:88px;border-radius:26px;background:${bg};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:34px;flex:none;`,
+      createdLong: created,
+      timeline,
+      profileFields: [
+        { label:'Industry', value: lead.industry, icon:this.ic('building'), bg:'#EAF1FF', color:'#2A6BFF' },
+        { label:'Kebutuhan Hukum', value: lead.need, icon:this.ic('scale'), bg:'#F0EBFF', color:'#7B52E0' },
+        { label:'Status', value: st.label, icon:this.ic('flag'), bg: st.bg, color: st.color },
+        { label:'Kanal Masuk', value: ch.label, icon:this.ic('chat'), bg:'#E9F7EF', color:'#16A45E' },
+        { label:'Tanggal Masuk', value: created, icon:this.ic('calendar'), bg:'#FFF3E0', color:'#E8870B' },
+        { label:'Sumber Lead', value: source, icon:this.ic('source'), bg:'#E7F6F8', color:'#0EA5C4' },
+      ],
+      contact: [
+        { label:'Nomor Telepon', value: phone, icon:this.ic('phone') },
+        { label:'Email', value: email, icon:this.ic('mail') },
+        { label:'Lokasi', value: city, icon:this.ic('pin') },
+        { label:'Website', value: site, icon:this.ic('globe') },
+      ],
+      channelDot: `position:absolute;right:-2px;bottom:-2px;width:16px;height:16px;border-radius:50%;background:${ch.color};border:2.5px solid #fff;`,
+      channelDotInline: `display:inline-block;width:8px;height:8px;border-radius:50%;background:${ch.color};`,
+      rowStyle: `display:flex;gap:12px;padding:12px;border-radius:14px;cursor:pointer;margin-bottom:2px;transition:background .15s;background:${isSel?'#F0F5FF':'transparent'};${isSel?'box-shadow:inset 3px 0 0 #2A6BFF;':''}`,
+      messages: allMsgs,
+      tags: (lead.tags||[]).map(t => ({ label: t.t, style: `display:inline-flex;align-items:center;height:26px;padding:0 12px;border-radius:20px;font-size:11.5px;font-weight:700;background:${t.c}1A;color:${t.c};` })),
+      details: [
+        { label:'Industry', value: lead.industry, bg:'#EAF1FF', color:'#2A6BFF', icon: this.ic('building') },
+        { label:'Kebutuhan Hukum', value: lead.need, bg:'#F0EBFF', color:'#7B52E0', icon: this.ic('scale') },
+        { label:'Kanal Masuk', value: ch.label, bg:'#E9F7EF', color:'#16A45E', icon: this.ic('chat') },
+        { label:'Status', value: st.label, bg: st.bg, color: st.color, icon: this.ic('flag') },
+      ],
+      onClick: () => this.setState({ selectedId: lead.id }),
+    });
+  }
+
+  ic(name) {
+    const p = {
+      building: '<path d="M5 21V5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v16M14 9h4a1 1 0 0 1 1 1v11M8 8h2M8 12h2M8 16h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
+      scale: '<path d="M12 4v16M7 20h10M5 8h14M9 8l-3 6a3 3 0 0 0 6 0L9 8Zm6 0-3 6a3 3 0 0 0 6 0l-3-6Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>',
+      chat: '<path d="M4 5h16v11H9l-4 3V5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>',
+      flag: '<path d="M5 21V4m0 1 4-1 5 2 5-1v9l-5 1-5-2-4 1" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>',
+      phone: '<path d="M4 6c0-1 .8-2 2-2h2l1.5 4-2 1.5a11 11 0 0 0 5 5l1.5-2 4 1.5v2c0 1.2-1 2-2 2A15 15 0 0 1 4 6Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>',
+      mail: '<rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>',
+      pin: '<path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.7"/>',
+      globe: '<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18" stroke="currentColor" stroke-width="1.5"/>',
+      calendar: '<rect x="4" y="5" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M4 9h16M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
+      source: '<path d="M12 3 4 7v6c0 4 3.5 7 8 8 4.5-1 8-4 8-8V7l-8-4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>',
+    }[name];
+    return React.createElement('svg', { width:16, height:16, viewBox:'0 0 24 24', fill:'none', dangerouslySetInnerHTML:{ __html: p } });
+  }
+
+  navIcon(name) {
+    const p = {
+      inbox: '<path d="M4 13h4l2 3h4l2-3h4M4 13l2-7h12l2 7v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>',
+      leads: '<circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M3 20a6 6 0 0 1 12 0M16 11a3 3 0 0 0 0-6M21 20a6 6 0 0 0-4-5.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+      broadcast: '<path d="M4 10v4a1 1 0 0 0 1 1h2l5 4V5L7 9H5a1 1 0 0 0-1 1ZM17 9a4 4 0 0 1 0 6M19.5 7a7 7 0 0 1 0 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
+      analytics: '<path d="M5 21V10M12 21V4M19 21v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+    }[name];
+    return React.createElement('svg', { width:22, height:22, viewBox:'0 0 24 24', fill:'none', dangerouslySetInnerHTML:{ __html: p } });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const all = this.leads();
+    const decoAll = all.map(l => this.decorate(l));
+
+    // tab counts
+    const counts = {
+      all: all.length,
+      unassigned: all.filter(l => l.status === 'new').length,
+      open: all.filter(l => l.status !== 'closed' && l.status !== 'handover').length,
+    };
+    const mkTab = (key, label) => {
+      const active = s.tab === key;
+      return {
+        label, count: counts[key],
+        onClick: () => this.setState({ tab: key }),
+        style: `flex:1;display:flex;align-items:center;justify-content:center;gap:6px;height:32px;border:none;border-radius:8px;font-family:inherit;font-weight:700;font-size:12.5px;cursor:pointer;background:${active?'#fff':'transparent'};color:${active?'#2A6BFF':'#7C89A8'};${active?'box-shadow:0 1px 4px rgba(28,44,90,.12);':''}`,
+        countStyle: `display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;font-size:10.5px;font-weight:800;background:${active?'#EAF1FF':'#E4E9F4'};color:${active?'#2A6BFF':'#8592AC'};`,
+      };
+    };
+
+    // filtering
+    let filtered = decoAll;
+    if (s.tab === 'unassigned') filtered = filtered.filter(l => l.status === 'new');
+    if (s.tab === 'open') filtered = filtered.filter(l => l.status !== 'closed' && l.status !== 'handover');
+    if (s.industryFilter !== 'Semua industry') filtered = filtered.filter(l => l.industry === s.industryFilter);
+    if (s.statusFilter !== 'all') filtered = filtered.filter(l => l.status === s.statusFilter);
+
+    let selected = decoAll.find(l => l.id === s.selectedId) || decoAll[0];
+
+    const navDefs = [
+      { key:'inbox', label:'Inbox', icon:'inbox' },
+      { key:'leads', label:'Leads', icon:'leads' },
+      { key:'analytics', label:'Laporan', icon:'analytics' },
+    ];
+    const navItems = navDefs.map((n, i) => {
+      const active = i === 0;
+      return {
+        label: n.label,
+        icon: this.navIcon(n.icon),
+        onClick: () => this.setState({ view: 'inbox' }),
+        btnStyle: `display:flex;flex-direction:column;align-items:center;gap:5px;width:60px;padding:9px 0;border:none;border-radius:12px;cursor:pointer;font-family:inherit;background:${active?'#EAF1FF':'transparent'};color:${active?'#2A6BFF':'#8A97B4'};`,
+        iconWrap: 'display:flex;align-items:center;justify-content:center;',
+      };
+    });
+
+    const industries = ['Semua industry','Manufaktur','Retail','Konstruksi','Properti'];
+    const statusOptions = [
+      { value:'all', label:'Semua status' },
+      { value:'new', label:'Baru' },
+      { value:'qualifying', label:'Kualifikasi' },
+      { value:'ready_for_handover', label:'Siap Handover' },
+      { value:'handover', label:'Diserahkan' },
+      { value:'closed', label:'Selesai' },
+    ];
+
+    return {
+      isInbox: s.view === 'inbox',
+      isDetail: s.view === 'detail',
+      onOpenDetail: () => this.setState({ view: 'detail' }),
+      onBack: () => this.setState({ view: 'inbox' }),
+      navItems,
+      tabs: [ mkTab('all','Semua'), mkTab('open','Aktif'), mkTab('unassigned','Baru') ],
+      totalLabel: filtered.length + ' percakapan',
+      industries, statusOptions,
+      industryFilter: s.industryFilter,
+      statusFilter: s.statusFilter,
+      onIndustry: (e) => this.setState({ industryFilter: e.target.value }),
+      onStatus: (e) => this.setState({ statusFilter: e.target.value }),
+      filteredLeads: filtered,
+      selected,
+      draft: s.draft,
+      onDraft: (e) => this.setState({ draft: e.target.value }),
+      onSend: () => {
+        const t = (s.draft || '').trim();
+        if (!t) return;
+        const id = s.selectedId;
+        const arr = (s.extraMsgs[id] || []).concat([{ who:'us', text:t, time:'Sekarang' }]);
+        this.setState({ extraMsgs: Object.assign({}, s.extraMsgs, { [id]: arr }), draft:'' });
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

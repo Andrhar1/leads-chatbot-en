@@ -1,0 +1,8 @@
+node_modules
+dist
+.env
+web/.next
+web/node_modules
+web/next-env.d.ts
+web/tsconfig.tsbuildinfo
+.DS_Store

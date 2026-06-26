@@ -1,0 +1,117 @@
+:root {
+  /* Brand / primary */
+  --c-primary: #2A6BFF;
+  --c-primary-grad-end: #3D7BFF;
+  --c-primary-deep: #1B4DDB;
+  --c-primary-tint: #EAF1FF;
+
+  /* Surfaces */
+  --c-page-bg: #EEF1F8;
+  --c-chat-bg: #F4F6FC;
+  --c-surface: #FFFFFF;
+  --c-surface-tint: #F7F9FD;
+  --c-control-bg: #F1F4FB;
+
+  /* Borders / dividers */
+  --c-border: #E6EAF3;
+  --c-border-card: #ECEFF6;
+  --c-border-input: #E3E8F3;
+  --c-divider: #EFF2F8;
+
+  /* Text */
+  --t-strong: #16203A;
+  --t-primary: #1B2741;
+  --t-secondary: #41506E;
+  --t-muted: #5C6A88;
+  --t-muted-2: #7C89A8;
+  --t-faint: #97A2BC;
+  --t-faint-2: #A6B0C8;
+
+  /* Gradients & shadows */
+  --grad-header: linear-gradient(90deg, #2A6BFF, #3D7BFF);
+  --grad-btn: linear-gradient(135deg, #2A6BFF, #3D7BFF);
+  --sh-card: 0 6px 22px rgba(28, 44, 90, .05);
+  --sh-header: 0 2px 12px rgba(42, 107, 255, .25);
+  --sh-primary: 0 3px 10px rgba(42, 107, 255, .3);
+  --sh-tab: 0 1px 4px rgba(28, 44, 90, .12);
+  --sh-bubble: 0 2px 8px rgba(28, 44, 90, .06);
+
+  /* Radii */
+  --r-input: 10px;
+  --r-chip: 7px;
+  --r-pill: 20px;
+  --r-card: 18px;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; margin: 0; }
+
+body {
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--c-page-bg);
+  color: var(--t-primary);
+}
+
+button { font-family: inherit; cursor: pointer; }
+input, textarea, select { font-family: inherit; }
+a { color: inherit; text-decoration: none; }
+
+/* Slim, tinted scrollbars to match the calm surfaces */
+.lf-scroll { scrollbar-width: thin; scrollbar-color: #D3DAEA transparent; }
+.lf-scroll::-webkit-scrollbar { width: 9px; height: 9px; }
+.lf-scroll::-webkit-scrollbar-thumb {
+  background: #D3DAEA; border-radius: 999px; border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.lf-scroll::-webkit-scrollbar-thumb:hover { background: #BFC8DE; background-clip: padding-box; }
+
+/* Custom select chevron */
+.lf-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237C89A8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+  padding-right: 30px !important;
+}
+
+@keyframes lfpop {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.lf-pop { animation: lfpop .25s cubic-bezier(.22, 1, .36, 1) both; }
+
+/* Reusable interaction polish */
+.lf-row { transition: background-color .14s ease; }
+.lf-row:hover { background: var(--c-surface-tint); }
+
+.lf-btn { transition: background-color .14s ease, box-shadow .14s ease, transform .14s ease; }
+.lf-btn:active { transform: translateY(1px); }
+
+.lf-primary:hover { filter: brightness(.96); }
+.lf-outline:hover { background: var(--c-surface-tint); }
+.lf-ghost:hover { background: var(--c-control-bg); }
+
+input::placeholder, textarea::placeholder { color: var(--t-faint); }
+.lf-search::placeholder { color: rgba(255, 255, 255, .8); }
+
+/* Lead detail page responsive grid */
+.lf-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: start;
+}
+.lf-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 20px;
+}
+@media (max-width: 900px) {
+  .lf-detail-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .lf-info-grid { grid-template-columns: 1fr; }
+}
